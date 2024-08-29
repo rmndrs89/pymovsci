@@ -1,0 +1,50 @@
+name: Deploy Jupyter Book
+run-name: ${{ github.actor }} deploys the Jupyter book automatically
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy-book:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+    - uses: actions/checkout@v4
+
+    # Setup conda
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with: 
+        activate-environment: pymovsci
+        environment-file: environment.yml
+        python-version: "3.10"
+        auto-activate-base: false
+
+    # (optional) Cache your executed notebooks between runs
+    # if you have config:
+    # execute:
+    #   execute_notebooks: cache
+    - name: cache executed notebooks
+      uses: actions/cache@v3
+      with:
+        path: book/_build/.jupyter_cache
+        key: jupyter-book-cache-${{ hashFiles('environment.yml') }}
+
+    # Build the book
+    - name: Build the book
+      run: |
+        jupyter-book build book/
+
+    # Upload the book's HTML as an artifact
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: "book/_build/html"
+
+    # Deploy the book's HTML to Github pages
+    - name: Deploy to Github pages
+      id: deployment
+      uses: actions/deploy-pages@v2
