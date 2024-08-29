@@ -11,6 +11,8 @@ dependencies:
   - pandas
   - scikit-learn
   - jupyter
+  - ipykernel
   - seaborn
   - statsmodels
   - jupyter-book
+  - plotly
