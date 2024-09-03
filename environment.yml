@@ -16,3 +16,5 @@ dependencies:
   - statsmodels
   - jupyter-book
   - plotly
+  - black
+  - pytest
